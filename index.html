@@ -87,39 +87,55 @@
     .bgcolor:focus {
       outline: none;
     }
-    
+
+#dark_mode_btn, #save_btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border: 0.1em solid #FFFFFF;
+    margin: 0 0.3em 0.3em 0;
+    border-radius: 4px;
+    box-sizing: border-box;
+    text-decoration: none;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 300;
+    color: #000000; /* Default text color */
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.dark_mode #dark_mode_btn, .dark_mode #save_btn {
+    color: #FFFFFF; /* Change text color to white in dark mode */
+    background-color: #000000; /* Change background color to black in dark mode */
+}
+
+#dark_mode_btn:hover, #save_btn:hover {
+    color: #000000; /* Default text color on hover */
+    background-color: #FFFFFF; /* Default background color on hover */
+}
+
+.dark_mode #dark_mode_btn:hover, .dark_mode #save_btn:hover {
+    color: #FFFFFF; /* Change text color to white on hover in dark mode */
+    background-color: #000000; /* Change background color to black on hover in dark mode */
+}
+
+#dark_mode_btn:active, #save_btn:active {
+    transform: scale(0.99); /* Scale down the button slightly when active */
+    box-shadow: none; /* Remove box shadow when active */
+}
+
 #dark_mode_btn {
     position: fixed;
     bottom: 20px;
     right: calc(50% + 10px);
-    padding: 10px 20px;
-    background-color: #333;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-#dark_mode_btn:hover {
-    background-color: #555;
 }
 
 #save_btn {
-    position: fixed;
-    bottom: 60px; /* Adjusted the bottom value to create space between the buttons */
+    position: fixed; /* Change to fixed to match dark_mode_btn */
+    bottom: 60px;
     right: calc(50% - 110px);
-    padding: 10px 20px;
-    background-color: #333;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
 }
 
-#save_btn:hover {
-    background-color: #555;
-}
-
+    
 hr {
     margin-top: 5px; /* Adjust this value to move the line higher or lower */
 }
@@ -173,9 +189,15 @@ input[type="checkbox"]:checked {
 }
 
 .credits h4{
-        font-family: "Poppins", sans-serif;
-      font-weight: 600;
-      font-style: normal;
+    font-family: "Poppins", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    margin: 15px;
+}
+      
 }
     </style>
     <script type="text/javascript">
@@ -204,13 +226,23 @@ function toggleDarkMode() {
     body.classList.toggle('dark_mode');
 
     var textEdit = document.querySelector('.text_edit');
+    var themeBtn = document.querySelector('.theme-btn');
+    var saveBtn = document.querySelector('.save-btn');
     var checkboxLabel = document.querySelector('label[for="autosave_checkbox"]');
 
     if (body.classList.contains('dark_mode')) {
         textEdit.style.scrollbarColor = '#666 #fff'; // Adjust the colors for dark mode
+        themeBtn.style.backgroundColor = '#666'; // Change theme button background color in dark mode
+        themeBtn.style.color = '#fff'; // Change theme button text color to white in dark mode
+        saveBtn.style.backgroundColor = '#666'; // Change save button background color in dark mode
+        saveBtn.style.color = '#fff'; // Change save button text color to white in dark mode
         checkboxLabel.style.color = '#fff'; // Change checkbox label color to white in dark mode
     } else {
         textEdit.style.scrollbarColor = '#ccc #333'; // Adjust the colors for light mode
+        themeBtn.style.backgroundColor = ''; // Reset theme button background color in light mode
+        themeBtn.style.color = ''; // Reset theme button text color in light mode
+        saveBtn.style.backgroundColor = ''; // Reset save button background color in light mode
+        saveBtn.style.color = ''; // Reset save button text color in light mode
         checkboxLabel.style.color = '#000'; // Change checkbox label color to black in light mode (adjust as needed)
     }
 }
@@ -281,10 +313,10 @@ window.addEventListener('load', loadAutoSavedText);
     <div id="view_count"></div>
     <div id="marks"></div>
 
-    <button style="right: 10px;" id="dark_mode_btn" onclick="toggleDarkMode()">Theme</button>
-    <button style="right: 10px;" id="save_btn" onclick="saveTextToLocal()">Save Text</button>
-<input type="checkbox" id="autosave_checkbox" class="custom-checkbox" onchange="toggleAutoSave()">
-<label class="checkbox-label" for="autosave_checkbox">Autosave</label>
+  <button class="theme-btn" style="right: 10px;" id="dark_mode_btn" onclick="toggleDarkMode()">Theme</button>
+<button class="save-btn" style="right: 10px;" id="save_btn" onclick="saveTextToLocal()">Save Text</button>
+<input style="opacity: 0;" type="checkbox" id="autosave_checkbox" class="custom-checkbox" onchange="toggleAutoSave()">
+<label style="opacity: 0;" class="checkbox-label" for="autosave_checkbox">Autosave</label>
 </body>
 <div class="credits">
   <h4>Made By BIGJ</h4>
