@@ -9,13 +9,23 @@
     overflow-x:hidden;
     overflow-y:hidden;
     }
+    
+.dark_mode {
+    background-color: #333;
+    color: #fff;
+}
+
+.dark_mode .text_edit {
+    background-color: #333;
+    color: #fff;
+}
     textarea:focus, input:focus{
       outline: none;
     }
   	.text_edit {
       padding: 2%;
   		width: 100%;
-  		height: 90%;
+  		height: 80%;
   		resize: none;
       border-width: 0;
       font-family: "Poppins", sans-serif;
@@ -23,6 +33,9 @@
       font-style: normal;
       font-size: 24px;
       line-height: 26.4px;
+    scrollbar-width: auto;
+      scrollbar-color: #ccc #333;
+      overflow-y: scroll;
     }
     .text_edit:focus {
       outline: none;
@@ -74,97 +87,206 @@
     .bgcolor:focus {
       outline: none;
     }
-	</style>
-	<script type="text/javascript">
-  // Function to count the number of words in the text box.
-    function view_count () {
-
-        // Find html elements.
-        var textArea = document.getElementById('my_text');
-        var div = document.getElementById('view_count');
-        // Put the text in a variable so we can manipulate it.
-        var text = textArea.value;
-		//remove whitespace before and after end of text
-		text = text.replace(/(^\s*)|(\s*$)/gi,"");
-		// replace newline if it occurs at least once with single whitespace
-		text = text.replace(/\n{1,}/gi," ");
-		// replace whitespace if it occurs at least twice with single whitespace
-		text = text.replace(/\s{2,}/gi," ");
-
-		var words = text.split(" ");
-		var len = 0;
-		for (i = 0 ; i < words.length; i++)
-		{
-			if (words[i] != " " && words[i] != ""){
-			len += 1 ;
-
-			 }
-		}
-    if (text != undefined)
-		document.getElementById("view_count").innerHTML = "Words: " + len ;
-    if ( len >= 50000 ) {
-      document.getElementById ("marks").innerHTML = "You did it! You hit the 50000 words mark! Congratulations!";
-    }
-    else if ( len >= 40000 ) {
-      document.getElementById ("marks").innerHTML =  "You hit the 40000 words mark. Awesome!";
-    }
-    else if ( len >= 25000 ) {
-      document.getElementById ("marks").innerHTML =  "You hit the 25000 words mark. Nice work!";
-    }
-    else if ( len >= 10000 ) {
-      document.getElementById ("marks").innerHTML =  "You hit the 10000 words mark. Keep it up!";
-    }
-    else if ( len >= 5000 ) {
-      document.getElementById ("marks").innerHTML =  "You hit the 5000 words mark. Congrats!";
-    }
-    else if ( len >= 1667 ) {
-      document.getElementById ("marks").innerHTML =  "You hit the 1667 words mark. Great job for today!";
-    }
-    else
-      document.getElementById ("marks").innerHTML =  "";
-
-    // To keep updating the word count by calling the function repeatedly
-    setTimeout(view_count, 1000);
-
-  }
-  // View Count function ends.
-
-// change theme function
-function changecolor() {
-  font = document.getElementById("fontval").value;
-  bg = document.getElementById("bgval").value;
-  fontfamily = document.getElementById("fontfamily").value;
-  fontsize = document.getElementById("fontsize").value;
-  document.body.style.color = font ;
-  document.getElementById("my_text").style.color = font ;
-  document.body.style.background = bg ;
-  document.getElementById("my_text").style.background = bg ;
-  document.getElementById("my_text").style.font = ("normal " + fontsize + " " + fontfamily) ;
-	
+    
+#dark_mode_btn {
+    position: fixed;
+    bottom: 20px;
+    right: calc(50% + 10px);
+    padding: 10px 20px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
 }
-</script>
 
+#dark_mode_btn:hover {
+    background-color: #555;
+}
 
+#save_btn {
+    position: fixed;
+    bottom: 60px; /* Adjusted the bottom value to create space between the buttons */
+    right: calc(50% - 110px);
+    padding: 10px 20px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#save_btn:hover {
+    background-color: #555;
+}
+
+hr {
+    margin-top: 5px; /* Adjust this value to move the line higher or lower */
+}
+
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #333;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+/* Style the custom checkbox when checked */
+input[type="checkbox"]:checked {
+  background-color: #1a5fc7;
+  border-color: #333;
+}
+
+.custom-checkbox {
+    position: fixed;
+    bottom: 100px;
+    right: 100px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #808080; /* Grey border color */
+    border-radius: 5px;
+    cursor: pointer;
+    outline: none;
+    background-image: url('checkmark.png'); /* Custom checkmark image */
+    background-size: 100% 100%;
+    background-color: #d3d3d3; /* Light grey background color */
+}
+
+.custom-checkbox:checked {
+    background-color: #808080; /* Darker grey background color when checked */
+    border-color: #808080; /* Darker grey border color when checked */
+}
+
+#autosave_checkbox + label {
+    position: fixed;
+    bottom: 100px;
+    right: 20px; /* Adjust the right value to move the label horizontally */
+    color: #000000; /* Text color */
+    font-family: "Poppins", sans-serif;
+}
+
+.credits h4{
+        font-family: "Poppins", sans-serif;
+      font-weight: 600;
+      font-style: normal;
+}
+    </style>
+    <script type="text/javascript">
+        function view_count() {
+            var textArea = document.getElementById('my_text');
+            var div = document.getElementById('view_count');
+            var text = textArea.value.trim(); // Trim whitespace from the text
+
+            var words = text.split(/\s+/); // Split text by whitespace to count words
+            var len = words.length;
+
+            document.getElementById("view_count").innerHTML = "Words: " + len;
+
+            // Add your word count milestones here
+            // Example: if (len >= 50000) { document.getElementById("marks").innerHTML = "You hit the 50000 words mark!"; }
+
+            setTimeout(view_count, 10);
+        }
+
+        window.onload = function() {
+            view_count(); // Call the function when the window loads
+        };
+        
+function toggleDarkMode() {
+    var body = document.body;
+    body.classList.toggle('dark_mode');
+
+    var textEdit = document.querySelector('.text_edit');
+    var checkboxLabel = document.querySelector('label[for="autosave_checkbox"]');
+
+    if (body.classList.contains('dark_mode')) {
+        textEdit.style.scrollbarColor = '#666 #fff'; // Adjust the colors for dark mode
+        checkboxLabel.style.color = '#fff'; // Change checkbox label color to white in dark mode
+    } else {
+        textEdit.style.scrollbarColor = '#ccc #333'; // Adjust the colors for light mode
+        checkboxLabel.style.color = '#000'; // Change checkbox label color to black in light mode (adjust as needed)
+    }
+}
+// Function to save text to local storage
+function saveTextToLocal() {
+    var textArea = document.getElementById('my_text');
+    var text = textArea.value;
+
+    localStorage.setItem('savedText', text);
+}
+
+// Function to load saved text from local storage
+function loadSavedText() {
+    var textArea = document.getElementById('my_text');
+    var savedText = localStorage.getItem('savedText');
+
+    if (savedText) {
+        textArea.value = savedText;
+    }
+}
+
+// Call loadSavedText when the page loads
+window.addEventListener('load', loadSavedText);
+
+// Function to automatically save text to local storage at regular intervals
+function autoSaveText() {
+    var textArea = document.getElementById('my_text');
+    var text = textArea.value;
+
+    localStorage.setItem('autoSavedText', text);
+}
+
+// Call autoSaveText every 30 seconds (adjust the interval as needed)
+setInterval(autoSaveText, 30000); // 30 seconds in milliseconds
+
+// Function to load auto-saved text from local storage
+function loadAutoSavedText() {
+    var textArea = document.getElementById('my_text');
+    var autoSavedText = localStorage.getItem('autoSavedText');
+
+    if (autoSavedText) {
+        textArea.value = autoSavedText;
+    }
+}
+
+// Call loadAutoSavedText when the page loads
+window.addEventListener('load', loadAutoSavedText);
+
+    function toggleAutoSave() {
+        var textArea = document.getElementById('my_text');
+        var autosaveCheckbox = document.getElementById('autosave_checkbox');
+
+        if (autosaveCheckbox.checked) {
+            textArea.setAttribute('oninput', 'autoSaveText()');
+        } else {
+            textArea.removeAttribute('oninput');
+        }
+    }
+    </script>
 </head>
-<body onload="view_count()">
+<body>
 
     <!-- Text area -->
     <textarea class="text_edit" id="my_text" placeholder="Start typing..."></textarea>
     <br />
     <hr/>
-    <!-- Empty div to put the count in -->
-    <div id="view_count">
-    </div>
-    <!-- Empty div to put encouraging remarks when author hits a new milestone-->
-    <div id="marks">
-    </div>
-    <!-- Div to change themes -->
-    <div id="theme">
-      <input type = text name="fontcolor" id="fontval" placeholder = "Font color, eg: #7D3C98">
-      <input type = text name="bgcolor" id="bgval" placeholder = "Bg color, eg: black">
-	  <input type = text name="fontfamily" id="fontfamily" placeholder = "Font name, eg: Arial">
-	  <input type = text name="fontsize" id="fontsize" placeholder = "Font size, default is 24px">
-      <button id = "themechange" onclick="changecolor()">Get New Theme </button>
-    </div>
+    <!-- Empty div to display word count -->
+    <div id="view_count"></div>
+    <div id="marks"></div>
+
+    <button style="right: 10px;" id="dark_mode_btn" onclick="toggleDarkMode()">Theme</button>
+    <button style="right: 10px;" id="save_btn" onclick="saveTextToLocal()">Save Text</button>
+<input type="checkbox" id="autosave_checkbox" class="custom-checkbox" onchange="toggleAutoSave()">
+<label class="checkbox-label" for="autosave_checkbox">Autosave</label>
 </body>
+<div class="credits">
+  <h4>Made By BIGJ</h4>
+</div>
 </html>
