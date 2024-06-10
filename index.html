@@ -93,7 +93,7 @@
     padding: 10px 20px;
     border: 0.1em solid #FFFFFF;
     margin: 0 0.3em 0.3em 0;
-    border-radius: 4px;
+    border-radius: 5px;
     box-sizing: border-box;
     text-decoration: none;
     font-family: 'Poppins', sans-serif;
@@ -199,7 +199,27 @@ input[type="checkbox"]:checked {
 }
       
 }
+
+  .grey-text {
+    color: #888; /* Grey color */
+  }
+  
+  #randomTip {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #f0f0f0;
+    padding: 10px;
+    border: 0.1em solid #FFFFFF;
+    margin: 0 0.3em 0.3em 0;
+    border-radius: 5px;
+    text-align: center;
+    font-family: "Poppins", sans-serif;
+    font-weight: 500;
+  }
     </style>
+    <div id="randomTip"></div>
     <script type="text/javascript">
         function view_count() {
             var textArea = document.getElementById('my_text');
@@ -229,6 +249,8 @@ function toggleDarkMode() {
     var themeBtn = document.querySelector('.theme-btn');
     var saveBtn = document.querySelector('.save-btn');
     var checkboxLabel = document.querySelector('label[for="autosave_checkbox"]');
+    var randomTip = document.querySelector('#randomTip');
+
 
     if (body.classList.contains('dark_mode')) {
         textEdit.style.scrollbarColor = '#666 #fff'; // Adjust the colors for dark mode
@@ -237,6 +259,10 @@ function toggleDarkMode() {
         saveBtn.style.backgroundColor = '#666'; // Change save button background color in dark mode
         saveBtn.style.color = '#fff'; // Change save button text color to white in dark mode
         checkboxLabel.style.color = '#fff'; // Change checkbox label color to white in dark mode
+        randomTip.style.color = '#fff'; // Change checkbox label color to white in dark mode
+        randomTip.style.backgroundColor = '#666'; // Change save button background color in dark mode
+
+
     } else {
         textEdit.style.scrollbarColor = '#ccc #333'; // Adjust the colors for light mode
         themeBtn.style.backgroundColor = ''; // Reset theme button background color in light mode
@@ -244,6 +270,8 @@ function toggleDarkMode() {
         saveBtn.style.backgroundColor = ''; // Reset save button background color in light mode
         saveBtn.style.color = ''; // Reset save button text color in light mode
         checkboxLabel.style.color = '#000'; // Change checkbox label color to black in light mode (adjust as needed)
+        randomTip.style.color = ''; // Change checkbox label color to white in dark mode
+        randomTip.style.backgroundColor = ''; // Change save button background color in dark mode
     }
 }
 // Function to save text to local storage
@@ -278,35 +306,43 @@ function autoSaveText() {
 // Call autoSaveText every 30 seconds (adjust the interval as needed)
 setInterval(autoSaveText, 30000); // 30 seconds in milliseconds
 
-// Function to load auto-saved text from local storage
-function loadAutoSavedText() {
-    var textArea = document.getElementById('my_text');
-    var autoSavedText = localStorage.getItem('autoSavedText');
+        function displayRandomTip() {
+            const noteTakingTips = [
+                "Use bullet points to organize your notes effectively.",
+                "Summarize key points in your own words to aid understanding.",
+                "Color-code your notes to easily distinguish different topics.",
+                "Review and revise your notes regularly to reinforce learning.",
+                "Use abbreviations to speed up your note-taking process.",
+                "Create mind maps to visually represent connections between ideas.",
+                "Include examples in your notes to clarify complex concepts.",
+                "Leave space for additional notes or annotations later on.",
+                "Use sticky notes for important points that you want to revisit.",
+                "Practice active listening to capture important information accurately.",
+                "Include page numbers or references to easily locate additional information.",
+                "Date your notes to track the timeline of your learning.",
+                "Use digital note-taking tools for easy organization and accessibility.",
+                "Ask questions in your notes to encourage critical thinking.",
+                "Create a table of contents for longer sets of notes.",
+                "Use highlighters to emphasize key information in your notes.",
+                "Group related information together to improve retention.",
+                "Use mnemonic devices to remember complex information more easily.",
+                "Take breaks during note-taking sessions to stay focused and refreshed.",
+                "Share your notes with peers to enhance collaboration and learning."
+            ];
 
-    if (autoSavedText) {
-        textArea.value = autoSavedText;
-    }
-}
+            const randomIndex = Math.floor(Math.random() * noteTakingTips.length);
+            const randomTip = noteTakingTips[randomIndex];
 
-// Call loadAutoSavedText when the page loads
-window.addEventListener('load', loadAutoSavedText);
-
-    function toggleAutoSave() {
-        var textArea = document.getElementById('my_text');
-        var autosaveCheckbox = document.getElementById('autosave_checkbox');
-
-        if (autosaveCheckbox.checked) {
-            textArea.setAttribute('oninput', 'autoSaveText()');
-        } else {
-            textArea.removeAttribute('oninput');
+            document.getElementById('randomTip').textContent = randomTip;
         }
-    }
+
+        displayRandomTip();
     </script>
 </head>
 <body>
 
     <!-- Text area -->
-    <textarea class="text_edit" id="my_text" placeholder="Start typing..."></textarea>
+    <textarea class="text_edit" id="my_text" oninput="autocorrectText()" placeholder="Start typing..."></textarea>
     <br />
     <hr/>
     <!-- Empty div to display word count -->
