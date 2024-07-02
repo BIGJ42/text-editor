@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Editor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center
+        }
+
+      .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            background-color: #343a40;
+            color: white;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            justify-content: center;
+            transition: all 0.3s;
+            overflow: hidden;
+            max-height: 50px;
+            border-radius: 5px;
+            right: 1px;
+            left: 1px;
+            width: 98%;
+            margin-top: 1px;
+        }
+
+        .toolbar:hover {
+            max-height: 500px;
+        }
+
+        .toolbar button, .toolbar select, .toolbar input {
+            background: none;
+            border: none;
+            color: white;
+            padding: 10px;
+            margin: 2px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            border-radius: 4px;
+        }
+        
+        .toolbar input {
+            background: none;
+            border: none;
+            color: white;
+            padding: 10px;
+            margin: 2px;
+            cursor: text;
+            transition: background-color 0.3s, transform 0.3s;
+            border-radius: 4px;
+        }
+        
+        .toolbar input:hover, .toolbar select:hover, .toolbar button:hover {
+            background-color: #495057;
+            transform: scale(1.05);
+        }
+        
+        .select option {
+    border-radius: 10px;
+}
+
+        .editor {
+            flex-grow: 1;
+            padding: 20px;
+            background-color: #fff;
+            overflow-y: auto;
+            outline: none;
+            resize: none;
+            height: calc(100vh - 160px);
+            width: 80%;
+            max-width: 800px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 5px;
+        }
+
+        .status-bar {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background-color: #343a40;
+            color: #ffffff;
+            font-weight: 600;
+            border-radius: 5px;
+            border-top: 1px solid #ddd;
+            user-select: none;
+        }
+
+        .icon {
+            font-size: 1.2em;
+        }
+
+        .notification {
+            position: fixed;
+            top: 50px;
+            background-color: #f4f4f4;
+            color: #333;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: none;
+            text-align: center;
+            width: 60%;
+            max-width: 400px;
+            z-index: 1000;
+        }
+
+        .notification h2 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .notification p {
+            margin-bottom: 20px;
+        }
+
+        .notification button {
+            background-color: #007AFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .notification button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+<div class="toolbar">
+    <input type="text" id="fileName" placeholder="Enter file name">
+<button onclick="saveText()" title="Save Text to browser"><i class="fas fa-save icon"></i></button>
+<button onclick="printEditorContent()" title="Save Text to browser" style="margin-right: 100px;"><i class="fas fa-print icon"></i></button>
+
+    <button onclick="execCmd('undo')" title="Undo"><i class="fas fa-undo icon"></i></button>
+    <button onclick="execCmd('redo')" title="Redo"><i class="fas fa-redo icon"></i></button>
+    <button onclick="execCmd('bold')" title="Bold"><i class="fas fa-bold icon"></i></button>
+    <button onclick="execCmd('italic')" title="Italic"><i class="fas fa-italic icon"></i></button>
+    <button onclick="execCmd('underline')" title="Underline"><i class="fas fa-underline icon"></i></button>
+    <button onclick="execCmd('strikeThrough')" title="Strikethrough"><i class="fas fa-strikethrough icon"></i></button>
+    <button onclick="execCmd('insertOrderedList')" title="Ordered List"><i class="fas fa-list-ol icon"></i></button>
+    <button onclick="execCmd('insertUnorderedList')" title="Unordered List"><i class="fas fa-list-ul icon"></i></button>
+    <button onclick="execCmd('justifyLeft')" title="Align Left"><i class="fas fa-align-left icon"></i></button>
+    <button onclick="execCmd('justifyCenter')" title="Align Center"><i class="fas fa-align-center icon"></i></button>
+    <button onclick="execCmd('justifyRight')" title="Align Right"><i class="fas fa-align-right icon"></i></button>
+    <button onclick="execCmd('indent')" title="Indent"><i class="fas fa-indent icon"></i></button>
+    <button onclick="execCmd('outdent')" title="Outdent"><i class="fas fa-outdent icon"></i></button>
+    <button onclick="execCmd('removeFormat')" title="Clear Formatting" style="margin-right: 100px;"><i class="fas fa-eraser icon"></i></button>
+    <select class="select" onchange="execCmdWithArg('fontName', this.value)" title="Font">
+        <option value="">Font</option>
+        <option value="Arial">Arial</option>
+        <option value="Courier New">Courier New</option>
+        <option value="Georgia">Georgia</option>
+        <option value="Tahoma">Tahoma</option>
+        <option value="Times New Roman">Times New Roman</option>
+        <option value="Verdana">Verdana</option>
+    </select>
+    <select class="select" onchange="execCmdWithArg('fontSize', this.value)" title="Font Size">
+        <option value="3">Font Size</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+    </select>
+    <select class="select" onchange="execCmdWithArg('foreColor', this.value)" title="Font Color">
+        <option value="">Font Color</option>
+        <option value="black">Black</option>
+        <option value="red">Red</option>
+        <option value="green">Green</option>
+        <option value="blue">Blue</option>
+        <option value="yellow">Yellow</option>
+        <option value="orange">Orange</option>
+        <option value="purple">Purple</option>
+        <option value="pink">Pink</option>
+        <option value="brown">Brown</option>
+        <option value="gray">Gray</option>
+    </select>
+</div>
+<div class="editor" contenteditable="true" oninput="updateWordCount()"></div>
+<div class="status-bar">
+    <span id="wordCount">Word Count: <span>0<a href="#">#</a></span></span>
+</div>
+
+<script>
+    function execCmd(command) {
+        document.execCommand(command, false, null);
+    }
+
+    function execCmdWithArg(command, arg) {
+        document.execCommand(command, false, arg);
+    }
+
+    let currentPage = 1;
+    const maxWordsPerPage = 200; // Adjust as needed
+
+    function updateWordCount() {
+        const editor = document.querySelector('.editor');
+        const text = editor.innerText || editor.textContent;
+        const wordCount = text.trim().split(/\s+/).filter(word => word.length > 0).length;
+
+        if (wordCount > maxWordsPerPage * currentPage) {
+            createNewPage();
+        }
+
+        document.getElementById('wordCount').innerText = `Word Count: ${wordCount}`;
+    }
+
+    function createNewPage() {
+        const editor = document.querySelector('.editor');
+        const newPage = document.createElement('div');
+        newPage.className = 'editor';
+        newPage.contentEditable = true;
+        document.body.appendChild(newPage);
+        currentPage++;
+    }
+
+    function printEditorContent() {
+        const editorContent = document.querySelector('.editor').innerHTML;
+        const printWindow = window.open('', '', 'height=600,width=800');
+        printWindow.document.write('<html><head><title>Editor Content</title></head><body>');
+        printWindow.document.write(editorContent);
+        printWindow.document.write('</body></html>');
+        printWindow.document.close();
+        printWindow.print();
+    }
+
+    function saveText() {
+        const fileName = document.getElementById('fileName').value;
+        const textContent = document.querySelector('.editor').innerHTML;
+
+        localStorage.setItem('fileName', fileName);
+        localStorage.setItem('textContent', textContent);
+    }
+
+    window.onload = function() {
+        const firstTimeUser = localStorage.getItem('firstTimeUser');
+
+        if (!firstTimeUser) {
+            const welcomePopup = document.getElementById('welcomePopup');
+            welcomePopup.style.display = 'block';
+
+            document.getElementById('startTutorial').addEventListener('click', function() {
+                // Code for tutorial goes here
+                alert('This is where you would start your tutorial.');
+                localStorage.setItem('firstTimeUser', true);
+                welcomePopup.style.display = 'none';
+            });
+            
+          
+            document.getElementById('noTutorial').addEventListener('click', function() {
+                welcomePopup.style.display = 'none';
+            });
+        }
+
+        const fileName = localStorage.getItem('fileName');
+        const textContent = localStorage.getItem('textContent');
+
+        if (fileName && textContent) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.innerHTML = `
+                <div style="margin-right:5px" class="message">Do you want to load the last saved note?</div>
+                <div class="options">
+                    <button id="yes">Yes</button>
+                    <button id="no">No</button>
+                </div>
+            `;
+            
+            const body = document.querySelector('body');
+            body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('slide-in');
+            }, 100);
+            
+            document.getElementById('yes').addEventListener('click', function() {
+                document.getElementById('fileName').value = fileName;
+                document.querySelector('.editor').innerHTML = textContent;
+                notification.remove();
+            });
+
+            document.getElementById('no').addEventListener('click', function() {
+                notification.remove();
+            });
+        }
+    };
+</script>
+
+</body>
+</html>
